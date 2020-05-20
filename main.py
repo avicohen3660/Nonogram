@@ -3,6 +3,7 @@ from tkinter import messagebox
 import ctypes
 from datetime import datetime as dt
 import time
+from Board import Logic
 
 def getInstances():
     file = open("C:/Users/USER/Desktop/Code/nono/nonogram/instances/12.txt", "r").readlines()
@@ -25,7 +26,8 @@ def getInstances():
 instances = getInstances()
 instances = [[[3],[5],[3,1],[2,1],[3,3,4],[2,2,7],[6,1,1],[4,2,2],[1,1],[3,1],[6],[2,7],[6,3,1],[1,2,2,1,1],[4,1,1,3],[4,2,2],[3,3,1],[3,3],[3],[2,1]],
            [[2],[1,2],[2,3],[2,3],[3,1,1],[2,1,1],[1,1,1,2,2],[1,1,3,1,3],[2,6,4],[3,3,9,1],[5,3,2],[3,1,2,2],[2,1,7],[3,3,2],[2,4],[2,1,2],[2,2,1],[2,2],[1],[1]]]
-
+instances = [[[5], [1], [5], [1], [5]], [[3, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 3]]]
+instances = [[[3],[2,2],[1,1],[2,2],[3]], [[3],[2,2],[1,1],[2,2],[3]]]
 user32 = ctypes.windll.user32
 screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
 numberSquares = max(len(max(instances[0], key=len)),len(max(instances[1], key=len)))
@@ -234,120 +236,128 @@ if __name__ == '__main__':
     root.bind('<Escape>', close)
     root.attributes('-fullscreen', True)
 
+    # def solve():
+    #     now=dt.now()
+    #     # fillTrivialLines()
+    #
+    #     # for i in range(len(data)):  # empty rows
+    #     #     if instances[0][i][0]==0:
+    #     #         for k in range(len(data)):
+    #     #             fillSquare(k,i,2)
+    #     # for i in range(len(data)):  # empty cols
+    #     #     if instances[1][i][0]==0:
+    #     #         for k in range(len(data)):
+    #     #             fillSquare(i,k,2)
+    #     # for i in range(len(data)):  # הצמדה ימינה שמאלה
+    #     #     rowNums = instances[0][i]
+    #     #     for j in range(len(rowNums)):
+    #     #         s=size-(sum(rowNums[j:])+len(rowNums)-j-1)
+    #     #         e=sum(rowNums[:j+1])+j
+    #     #         if (s<e):
+    #     #             for k in range(s,e):
+    #     #                 fillSquare(k,i,1)
+    #     #
+    #     # for i in range(len(data)):  # הצמדה למעלה למטה
+    #     #     colNums = instances[1][i]
+    #     #     for j in range(len(colNums)):
+    #     #         s=size-(sum(colNums[j:])+len(colNums)-j-1)
+    #     #         e=sum(colNums[:j+1])+j
+    #     #         if (s<e):
+    #     #             for k in range(s,e):
+    #     #                 fillSquare(i,k,1)
+    #     #
+    #     #
+    #     # for i in range(len(data[0])):  #fill rows in left
+    #     #     for j in range(instances[0][i][0]):
+    #     #         if data[j][i] == 1:
+    #     #             for k in range(j,instances[0][i][0]):
+    #     #                 fillSquare(k,i,1)
+    #     #             if j == 0:
+    #     #                 fillSquare(k+1,i,2)
+    #     #             break
+    #     #     # if data[instances[0][i][0]][i] == 1:
+    #     #     #     fillSquare(0,i,1)
+    #     # for i in range(len(data[-1])):  #fill rows in right
+    #     #     for j in range(instances[0][i][-1]):
+    #     #         if data[len(data)-j-1][i] == 1:
+    #     #             for k in range(len(data)-j-1,len(data)-instances[0][i][-1]-1,-1):
+    #     #                 fillSquare(k,i,1)
+    #     #             if j == 0:
+    #     #                 fillSquare(k-1,i,2)
+    #     #             break
+    #     #     # if data[len(data)-instances[0][i][-1]-1][i] == 1:
+    #     #     #     fillSquare(len(data)-1,i,1)
+    #     # for i in range(len(data)):  #fill cols למעלה
+    #     #     for j in range(instances[1][i][0]):
+    #     #         if data[i][j] == 1:
+    #     #             for k in range(j,instances[1][i][0]):
+    #     #                 fillSquare(i,k,1)
+    #     #             if j == 0:
+    #     #                 fillSquare(i,k+1,2)
+    #     #             break
+    #     #
+    #     # for i in range(len(data)):  #fill cols למטה
+    #     #     for j in range(instances[1][i][-1]):
+    #     #         if data[i][len(data[0])-j-1] == 1:
+    #     #             for k in range(len(data[0])-j-1, len(data[0])-instances[1][i][-1]-1,-1):
+    #     #                 fillSquare(i,k,1)
+    #     #             if j == 0:
+    #     #                 fillSquare(i,k-1,2)
+    #     #             break
+    #     #
+    #     # def isFinished(nums, line):
+    #     #     sum=0
+    #     #     l=[]
+    #     #     for i in line:
+    #     #         if i == 1:
+    #     #             sum+=1
+    #     #         else:
+    #     #             if sum!=0:
+    #     #                 l.append(sum)
+    #     #                 sum=0
+    #     #     l.append(sum)
+    #     #
+    #     #     return nums==l
+    #     #
+    #     # def improve(row=None, col=None):
+    #     #     if row != None:
+    #     #         nums=instances[0][row]
+    #     #         if row not in finishedLines[0]:
+    #     #             if isFinished(nums,[i[row] for i in data]):
+    #     #                 for k in range(len(data)):
+    #     #                     if data[k][row] == 0:
+    #     #                         fillSquare(k,row,2)
+    #     #                 finishedLines[0].append(row)
+    #     #             else: #not finished
+    #     #                 pass
+    #     #     if col != None:
+    #     #         nums=instances[1][col]
+    #     #         if col not in finishedLines[1]:
+    #     #             if isFinished(nums, data[col]):
+    #     #                 for k in range(len(data[col])):
+    #     #                     if data[col][k] == 0:
+    #     #                         fillSquare(col,k,2)
+    #     #                 finishedLines[1].append(col)
+    #     #             else:  # not finished
+    #     #                 pass
+    #     #
+    #     # print(finishedLines)
+    #     # for i in range(len(data)):
+    #     #     improve(col=i)
+    #     # for i in range(len(data[0])):
+    #     #     improve(row=i)
+    #     #
+    #
+    #     print(dt.now()-now)
+    #     # print(finishedLines)
+
     def solve():
-        now=dt.now()
-        # fillTrivialLines()
+        logic = Logic(5, 5)
+        logic.solve()
+        for i in range(logic.width):
+            for j in range(logic.height):
+                fillSquare(j,i,logic.board[i][j])
 
-        # for i in range(len(data)):  # empty rows
-        #     if instances[0][i][0]==0:
-        #         for k in range(len(data)):
-        #             fillSquare(k,i,2)
-        # for i in range(len(data)):  # empty cols
-        #     if instances[1][i][0]==0:
-        #         for k in range(len(data)):
-        #             fillSquare(i,k,2)
-        # for i in range(len(data)):  # הצמדה ימינה שמאלה
-        #     rowNums = instances[0][i]
-        #     for j in range(len(rowNums)):
-        #         s=size-(sum(rowNums[j:])+len(rowNums)-j-1)
-        #         e=sum(rowNums[:j+1])+j
-        #         if (s<e):
-        #             for k in range(s,e):
-        #                 fillSquare(k,i,1)
-        #
-        # for i in range(len(data)):  # הצמדה למעלה למטה
-        #     colNums = instances[1][i]
-        #     for j in range(len(colNums)):
-        #         s=size-(sum(colNums[j:])+len(colNums)-j-1)
-        #         e=sum(colNums[:j+1])+j
-        #         if (s<e):
-        #             for k in range(s,e):
-        #                 fillSquare(i,k,1)
-        #
-        #
-        # for i in range(len(data[0])):  #fill rows in left
-        #     for j in range(instances[0][i][0]):
-        #         if data[j][i] == 1:
-        #             for k in range(j,instances[0][i][0]):
-        #                 fillSquare(k,i,1)
-        #             if j == 0:
-        #                 fillSquare(k+1,i,2)
-        #             break
-        #     # if data[instances[0][i][0]][i] == 1:
-        #     #     fillSquare(0,i,1)
-        # for i in range(len(data[-1])):  #fill rows in right
-        #     for j in range(instances[0][i][-1]):
-        #         if data[len(data)-j-1][i] == 1:
-        #             for k in range(len(data)-j-1,len(data)-instances[0][i][-1]-1,-1):
-        #                 fillSquare(k,i,1)
-        #             if j == 0:
-        #                 fillSquare(k-1,i,2)
-        #             break
-        #     # if data[len(data)-instances[0][i][-1]-1][i] == 1:
-        #     #     fillSquare(len(data)-1,i,1)
-        # for i in range(len(data)):  #fill cols למעלה
-        #     for j in range(instances[1][i][0]):
-        #         if data[i][j] == 1:
-        #             for k in range(j,instances[1][i][0]):
-        #                 fillSquare(i,k,1)
-        #             if j == 0:
-        #                 fillSquare(i,k+1,2)
-        #             break
-        #
-        # for i in range(len(data)):  #fill cols למטה
-        #     for j in range(instances[1][i][-1]):
-        #         if data[i][len(data[0])-j-1] == 1:
-        #             for k in range(len(data[0])-j-1, len(data[0])-instances[1][i][-1]-1,-1):
-        #                 fillSquare(i,k,1)
-        #             if j == 0:
-        #                 fillSquare(i,k-1,2)
-        #             break
-        #
-        # def isFinished(nums, line):
-        #     sum=0
-        #     l=[]
-        #     for i in line:
-        #         if i == 1:
-        #             sum+=1
-        #         else:
-        #             if sum!=0:
-        #                 l.append(sum)
-        #                 sum=0
-        #     l.append(sum)
-        #
-        #     return nums==l
-        #
-        # def improve(row=None, col=None):
-        #     if row != None:
-        #         nums=instances[0][row]
-        #         if row not in finishedLines[0]:
-        #             if isFinished(nums,[i[row] for i in data]):
-        #                 for k in range(len(data)):
-        #                     if data[k][row] == 0:
-        #                         fillSquare(k,row,2)
-        #                 finishedLines[0].append(row)
-        #             else: #not finished
-        #                 pass
-        #     if col != None:
-        #         nums=instances[1][col]
-        #         if col not in finishedLines[1]:
-        #             if isFinished(nums, data[col]):
-        #                 for k in range(len(data[col])):
-        #                     if data[col][k] == 0:
-        #                         fillSquare(col,k,2)
-        #                 finishedLines[1].append(col)
-        #             else:  # not finished
-        #                 pass
-        #
-        # print(finishedLines)
-        # for i in range(len(data)):
-        #     improve(col=i)
-        # for i in range(len(data[0])):
-        #     improve(row=i)
-        #
-
-        print(dt.now()-now)
-        # print(finishedLines)
 
     root.after(0, solve)
     root.mainloop()
